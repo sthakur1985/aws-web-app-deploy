@@ -1,104 +1,144 @@
-resource "aws_vpc" "main_vpc" {
-  cidr_block = "${var.vpc_cidr}"
-  region = "eu-west-2"
-  tags = {
-    name = "${var.costcenter}-${var.env}-vpc"
-    environment = var.env
-    costcenter = var.costcenter
+# Validate subnet counts
+resource "null_resource" "subnet_validation" {
+  count = length(var.public_subnet_cidrs) > local.max_subnets || length(var.private_subnet_cidrs) > local.max_subnets ? 1 : 0
+  
+  provisioner "local-exec" {
+    command = "echo 'Error: Number of subnets exceeds available AZs' && exit 1"
   }
+}
+
+resource "aws_vpc" "main" {
+  cidr_block = var.vpc_cidr
+  
+  # DNS Configuration
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  tags = merge({
+    Name = "${var.project}-${var.env}-vpc"
+  }, local.common_tags)
 }
 
 resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.this.id
-  tags = { 
-  Name = "igw-${var.env}" 
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name        = "${var.project}-${var.env}-igw"
+    Environment = var.env
+    Project     = var.project
+    CostCenter  = var.costcenter
   }
 }
 
 
-# public subnets
+# Public subnets
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 resource "aws_subnet" "public" {
-  count = length(var.public_subnet_cidrs)
-  vpc_id = aws_vpc.this.id
-  cidr_block = var.public_subnet_cidrs[count.index]
+  count                   = length(var.public_subnet_cidrs)
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidrs[count.index]
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true
-  availability_zone = element(var.azs, count.index)
+
   tags = {
-  Name = "${var.project}-${var.environment}-public-${count.index}"
-  Tier = "public"
-  Environment = var.environment
-  Project = var.project
-  Owner = var.owner
+    Name        = "${var.project}-${var.env}-public-${count.index + 1}"
+    Tier        = "Public"
+    Environment = var.env
+    Project     = var.project
+    CostCenter  = var.costcenter
   }
 }
 
 
-# private subnets
+# Private subnets
 resource "aws_subnet" "private" {
-  count = length(var.private_subnet_cidrs)
-  vpc_id = aws_vpc.this.id
-  cidr_block = var.private_subnet_cidrs[count.index]
-  availability_zone = element(var.azs, count.index)
+  count             = length(var.private_subnet_cidrs)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+
   tags = {
-  Name = "${var.project}-${var.environment}-private-${count.index}"
-  Tier = "private"
-  Environment = var.environment
-  Project = var.project
-  Owner = var.owner
+    Name        = "${var.project}-${var.env}-private-${count.index + 1}"
+    Tier        = "Private"
+    Environment = var.env
+    Project     = var.project
+    CostCenter  = var.costcenter
   }
 }
 
 
-# NAT Gateway in first public subnet (example)
+# Multiple NAT Gateways for high availability
 resource "aws_eip" "nat" {
-  vpc = true
+  count = local.nat_gateway_count
+}
+
+resource "aws_nat_gateway" "nat" {
+  count         = local.nat_gateway_count
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
+
+  tags = {
+    Name        = "${var.project}-${var.env}-nat-gw-${count.index + 1}"
+    Environment = var.env
+    Project     = var.project
+    CostCenter  = var.costcenter
+  }
+
   depends_on = [aws_internet_gateway.igw]
 }
 
 
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat.id
-  subnet_id = aws_subnet.public[0].id
-  tags = { 
-    Name = "nat-${var.environment}" 
-    }
-}
-
-
-# Route tables
+# Public route table
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.main.id
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
-tags = {
-  Name = "public-rt-${var.environment}" 
+
+  tags = {
+    Name        = "${var.project}-${var.env}-public-rt"
+    Environment = var.env
+    Project     = var.project
+    CostCenter  = var.costcenter
   }
 }
 
 
-resource "aws_route_table_association" "public_assoc" {
-  count = length(aws_subnet.public)
-  subnet_id = aws_subnet.public[count.index].id
+resource "aws_route_table_association" "public" {
+  count          = length(aws_subnet.public)
+  subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
 
 
+# Private route tables (one per AZ for multiple NAT Gateways)
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.this.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat.id
+  count  = length(aws_subnet.private)
+  vpc_id = aws_vpc.main.id
+
+  dynamic "route" {
+    for_each = var.enable_nat_gateway ? [1] : []
+    content {
+      cidr_block     = "0.0.0.0/0"
+      nat_gateway_id = aws_nat_gateway.nat[count.index].id
+    }
   }
-  tags = { 
-  Name = "private-rt-${var.environment}" 
+
+  tags = {
+    Name        = "${var.project}-${var.env}-private-rt-${count.index + 1}"
+    Environment = var.env
+    Project     = var.project
+    CostCenter  = var.costcenter
   }
 }
 
-
-resource "aws_route_table_association" "private_assoc" {
- count = length(aws_subnet.private)
- subnet_id = aws_subnet.private[count.index].id
- route_table_id = aws_route_table.private.id
+resource "aws_route_table_association" "private" {
+  count          = length(aws_subnet.private)
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private[count.index].id
 }
