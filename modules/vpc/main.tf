@@ -1,7 +1,7 @@
 # Validate subnet counts
 resource "null_resource" "subnet_validation" {
-  count = length(var.public_subnet_cidrs) > local.max_subnets || length(var.private_subnet_cidrs) > local.max_subnets ? 1 : 0
-  
+  count = length(var.public_subnet_cidrs) > local.max_subnets || length(var.ec2_private_subnet_cidrs) > local.max_subnets || length(var.rds_private_subnet_cidrs) > local.max_subnets ? 1 : 0
+
   provisioner "local-exec" {
     command = "echo 'Error: Number of subnets exceeds available AZs' && exit 1"
   }
@@ -9,7 +9,7 @@ resource "null_resource" "subnet_validation" {
 
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr
-  
+
   # DNS Configuration
   enable_dns_hostnames = true
   enable_dns_support   = true
@@ -53,16 +53,32 @@ resource "aws_subnet" "public" {
 }
 
 
-# Private subnets
-resource "aws_subnet" "private" {
-  count             = length(var.private_subnet_cidrs)
+# EC2 Private subnets (2 subnets in 2 AZs)
+resource "aws_subnet" "ec2_private" {
+  count             = length(var.ec2_private_subnet_cidrs)
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_subnet_cidrs[count.index]
+  cidr_block        = var.ec2_private_subnet_cidrs[count.index]
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
-    Name        = "${var.project}-${var.env}-private-${count.index + 1}"
-    Tier        = "Private"
+    Name        = "${var.project}-${var.env}-ec2-private-${count.index + 1}"
+    Tier        = "Private-EC2"
+    Environment = var.env
+    Project     = var.project
+    CostCenter  = var.costcenter
+  }
+}
+
+# RDS Private subnets (2 subnets in 2 AZs for RDS subnet group)
+resource "aws_subnet" "rds_private" {
+  count             = length(var.rds_private_subnet_cidrs)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.rds_private_subnet_cidrs[count.index]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+
+  tags = {
+    Name        = "${var.project}-${var.env}-rds-private-${count.index + 1}"
+    Tier        = "Private-RDS"
     Environment = var.env
     Project     = var.project
     CostCenter  = var.costcenter
@@ -116,9 +132,9 @@ resource "aws_route_table_association" "public" {
 }
 
 
-# Private route tables (one per AZ for multiple NAT Gateways)
-resource "aws_route_table" "private" {
-  count  = length(aws_subnet.private)
+# EC2 Private route tables (one per AZ for multiple NAT Gateways)
+resource "aws_route_table" "ec2_private" {
+  count  = length(aws_subnet.ec2_private)
   vpc_id = aws_vpc.main.id
 
   dynamic "route" {
@@ -130,15 +146,34 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name        = "${var.project}-${var.env}-private-rt-${count.index + 1}"
+    Name        = "${var.project}-${var.env}-ec2-private-rt-${count.index + 1}"
     Environment = var.env
     Project     = var.project
     CostCenter  = var.costcenter
   }
 }
 
-resource "aws_route_table_association" "private" {
-  count          = length(aws_subnet.private)
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private[count.index].id
+resource "aws_route_table_association" "ec2_private" {
+  count          = length(aws_subnet.ec2_private)
+  subnet_id      = aws_subnet.ec2_private[count.index].id
+  route_table_id = aws_route_table.ec2_private[count.index].id
+}
+
+# RDS Private route tables (no internet access needed)
+resource "aws_route_table" "rds_private" {
+  count  = length(aws_subnet.rds_private)
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name        = "${var.project}-${var.env}-rds-private-rt-${count.index + 1}"
+    Environment = var.env
+    Project     = var.project
+    CostCenter  = var.costcenter
+  }
+}
+
+resource "aws_route_table_association" "rds_private" {
+  count          = length(aws_subnet.rds_private)
+  subnet_id      = aws_subnet.rds_private[count.index].id
+  route_table_id = aws_route_table.rds_private[count.index].id
 }

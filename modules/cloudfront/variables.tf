@@ -48,7 +48,7 @@ variable "price_class" {
   description = "CloudFront price class"
   type        = string
   default     = "PriceClass_100"
-  
+
   validation {
     condition     = contains(["PriceClass_All", "PriceClass_200", "PriceClass_100"], var.price_class)
     error_message = "Price class must be one of: PriceClass_All, PriceClass_200, PriceClass_100."

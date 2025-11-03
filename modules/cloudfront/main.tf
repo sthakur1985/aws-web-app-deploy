@@ -44,9 +44,9 @@ resource "aws_cloudfront_distribution" "static_content" {
 
   viewer_certificate {
     cloudfront_default_certificate = var.ssl_certificate_arn == null
-    acm_certificate_arn           = var.ssl_certificate_arn
-    ssl_support_method            = var.ssl_certificate_arn != null ? "sni-only" : null
-    minimum_protocol_version      = var.ssl_certificate_arn != null ? "TLSv1.2_2021" : null
+    acm_certificate_arn            = var.ssl_certificate_arn
+    ssl_support_method             = var.ssl_certificate_arn != null ? "sni-only" : null
+    minimum_protocol_version       = var.ssl_certificate_arn != null ? "TLSv1.2_2021" : null
   }
 
   tags = {

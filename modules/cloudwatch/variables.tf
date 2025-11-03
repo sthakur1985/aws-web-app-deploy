@@ -47,7 +47,7 @@ variable "rds_free_storage_threshold" {
   description = "Threshold for RDS free storage alarm in bytes (default: 2GB)"
   type        = number
   default     = 2000000000
-  
+
   validation {
     condition     = var.rds_free_storage_threshold > 0
     error_message = "RDS free storage threshold must be greater than 0."

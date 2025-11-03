@@ -36,34 +36,34 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_db_instance" "this" {
-  identifier             = "${var.project}-rds"
-  allocated_storage      = var.allocated_storage
-  max_allocated_storage  = var.max_allocated_storage
-  storage_type           = var.storage_type
-  engine                 = var.engine
-  engine_version         = var.engine_version
-  instance_class         = var.instance_class
-  db_subnet_group_name   = aws_db_subnet_group.rds-sub.name
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
-  db_name                = var.db_name
-  username               = var.username
-  manage_master_user_password = true
-  master_user_secret_kms_key_id = var.kms_key_id
-  port                   = var.port
-  skip_final_snapshot       = var.skip_final_snapshot
-  final_snapshot_identifier = var.skip_final_snapshot == true ? null : "${var.project}-rds-final-snapshot"
-  publicly_accessible    = false
-  multi_az               = var.multi_az
-  storage_encrypted      = true
-  kms_key_id            = var.kms_key_id
-  deletion_protection    = var.deletion_protection
-  backup_retention_period = var.backup_retention_period
-  backup_window          = var.backup_window
-  maintenance_window     = var.maintenance_window
-  auto_minor_version_upgrade = true
-  monitoring_interval    = var.monitoring_interval
-  monitoring_role_arn    = var.monitoring_interval > 0 ? var.rds_monitoring_role_arn : null
-  performance_insights_enabled = var.performance_insights_enabled
+  identifier                      = "${var.project}-rds"
+  allocated_storage               = var.allocated_storage
+  max_allocated_storage           = var.max_allocated_storage
+  storage_type                    = var.storage_type
+  engine                          = var.engine
+  engine_version                  = var.engine_version
+  instance_class                  = var.instance_class
+  db_subnet_group_name            = aws_db_subnet_group.rds-sub.name
+  vpc_security_group_ids          = [aws_security_group.rds_sg.id]
+  db_name                         = var.db_name
+  username                        = var.username
+  manage_master_user_password     = true
+  master_user_secret_kms_key_id   = var.kms_key_id
+  port                            = var.port
+  skip_final_snapshot             = var.skip_final_snapshot
+  final_snapshot_identifier       = var.skip_final_snapshot == true ? null : "${var.project}-rds-final-snapshot"
+  publicly_accessible             = false
+  multi_az                        = var.multi_az
+  storage_encrypted               = true
+  kms_key_id                      = var.kms_key_id
+  deletion_protection             = var.deletion_protection
+  backup_retention_period         = var.backup_retention_period
+  backup_window                   = var.backup_window
+  maintenance_window              = var.maintenance_window
+  auto_minor_version_upgrade      = true
+  monitoring_interval             = var.monitoring_interval
+  monitoring_role_arn             = var.monitoring_interval > 0 ? var.rds_monitoring_role_arn : null
+  performance_insights_enabled    = var.performance_insights_enabled
   enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
 
   tags = merge(local.common_tags, {
@@ -85,7 +85,7 @@ resource "aws_db_instance" "this" {
 
 resource "aws_cloudwatch_metric_alarm" "rds_low_storage" {
   count = length(var.alarm_actions) > 0 ? 1 : 0
-  
+
   alarm_name          = "${var.project}-rds-low-storage"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = 1
@@ -96,11 +96,11 @@ resource "aws_cloudwatch_metric_alarm" "rds_low_storage" {
   threshold           = 2000000000
   alarm_description   = "RDS free storage space below 2GB threshold"
   treat_missing_data  = "notBreaching"
-  
+
   dimensions = {
     DBInstanceIdentifier = aws_db_instance.this.id
   }
-  
+
   alarm_actions = var.alarm_actions
   ok_actions    = var.alarm_actions
   tags          = local.common_tags

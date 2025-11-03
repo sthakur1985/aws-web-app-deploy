@@ -50,10 +50,16 @@ variable "public_subnet_cidrs" {
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
-variable "private_subnet_cidrs" {
-  description = "CIDR blocks for private subnets"
+variable "ec2_private_subnet_cidrs" {
+  description = "CIDR blocks for EC2 private subnets (2 subnets in 2 AZs)"
   type        = list(string)
   default     = ["10.0.3.0/24", "10.0.4.0/24"]
+}
+
+variable "rds_private_subnet_cidrs" {
+  description = "CIDR blocks for RDS private subnets (2 subnets in 2 AZs)"
+  type        = list(string)
+  default     = ["10.0.5.0/24", "10.0.6.0/24"]
 }
 
 variable "enable_nat_gateway" {

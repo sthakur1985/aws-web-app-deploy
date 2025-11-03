@@ -6,9 +6,9 @@
 module "iam" {
   source = "./modules/iam"
 
-  project_name         = var.project_name
-  env                  = var.env
-  costcenter           = var.costcenter
+  project_name          = var.project_name
+  env                   = var.env
+  costcenter            = var.costcenter
   enable_rds_monitoring = var.rds_monitoring_interval > 0
 }
 
@@ -25,9 +25,10 @@ module "vpc" {
   enable_flow_logs        = var.enable_flow_logs
   flow_log_retention_days = var.flow_log_retention_days
 
-  vpc_cidr             = var.vpc_cidr
-  public_subnet_cidrs  = var.public_subnet_cidrs
-  private_subnet_cidrs = var.private_subnet_cidrs
+  vpc_cidr                 = var.vpc_cidr
+  public_subnet_cidrs      = var.public_subnet_cidrs
+  ec2_private_subnet_cidrs = var.ec2_private_subnet_cidrs
+  rds_private_subnet_cidrs = var.rds_private_subnet_cidrs
 }
 
 ############################################
@@ -55,15 +56,15 @@ module "compute" {
   source = "./modules/compute"
 
   vpc_id               = module.vpc.vpc_id
-  private_subnet_ids   = module.vpc.private_subnet_ids
+  private_subnet_ids   = module.vpc.ec2_private_subnet_ids
   alb_target_group_arn = module.alb.target_group_arn
 
-  project    = var.project
-  env        = var.env
-  costcenter = var.costcenter
-  aws_region = var.aws_region
-  owner      = var.owner
-  user_data_path = var.user_data_path
+  project                   = var.project
+  env                       = var.env
+  costcenter                = var.costcenter
+  aws_region                = var.aws_region
+  owner                     = var.owner
+  user_data_path            = var.user_data_path
   ec2_instance_profile_name = module.iam.ec2_instance_profile_name
 
   instance_type = var.instance_type
@@ -81,7 +82,7 @@ module "rds" {
   source = "./modules/rds"
 
   vpc_id                = module.vpc.vpc_id
-  private_subnet_ids    = module.vpc.private_subnet_ids
+  private_subnet_ids    = module.vpc.rds_private_subnet_ids
   ec2_security_group_id = module.compute.ec2_security_group_id
 
   engine            = var.db_engine
@@ -110,8 +111,8 @@ module "s3" {
   source = "./modules/s3"
 
   project_name = var.project_name
-  env         = var.env
-  costcenter  = var.costcenter
+  env          = var.env
+  costcenter   = var.costcenter
 }
 
 ############################################
@@ -121,7 +122,7 @@ module "cloudfront" {
   count  = var.enable_static_hosting ? 1 : 0
   source = "./modules/cloudfront"
 
-  project_name              = var.project_name
+  project_name             = var.project_name
   env                      = var.env
   costcenter               = var.costcenter
   s3_bucket_name           = module.s3[0].bucket_name
@@ -169,7 +170,7 @@ module "route53" {
   count  = var.domain_name != null ? 1 : 0
   source = "./modules/route53"
 
-  project_name               = var.project_name
+  project_name              = var.project_name
   env                       = var.env
   costcenter                = var.costcenter
   domain_name               = var.domain_name
@@ -192,13 +193,13 @@ module "cloudwatch" {
   asg_name               = module.compute.asg_name
   db_instance_identifier = module.rds.rds_instance_id
 
-  project                       = var.project
-  enable_alb_alarms            = var.enable_alb_alarms
-  alb_arn                      = module.alb.alb_arn
-  target_group_arn             = module.alb.target_group_arn
-  alarm_actions                = var.alarm_actions
-  ec2_cpu_threshold            = var.ec2_cpu_threshold
-  rds_cpu_threshold            = var.rds_cpu_threshold
-  rds_free_storage_threshold   = var.rds_free_storage_threshold
+  project                    = var.project
+  enable_alb_alarms          = var.enable_alb_alarms
+  alb_arn                    = module.alb.alb_arn
+  target_group_arn           = module.alb.target_group_arn
+  alarm_actions              = var.alarm_actions
+  ec2_cpu_threshold          = var.ec2_cpu_threshold
+  rds_cpu_threshold          = var.rds_cpu_threshold
+  rds_free_storage_threshold = var.rds_free_storage_threshold
 }
 

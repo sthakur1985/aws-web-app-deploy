@@ -1,32 +1,32 @@
 # Security group for EC2 allowing traffic from ALB
 resource "aws_security_group" "ec2_sg" {
-  name = "${var.project}-${var.env}-ec2-sg"
-  vpc_id = var.vpc_id
+  name        = "${var.project}-${var.env}-ec2-sg"
+  vpc_id      = var.vpc_id
   description = "Allow inbound from ALB and outbound to anywhere"
 
 
   ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # ALB will target via SG but for simplicity we allow 80 from anywhere; lock down by using ALB SG in production
   }
 
 
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
 
-tags = {
-  Environment = var.env
-  Project = var.project
-  Owner = var.costcenter
-  managedby = "terraform"
- }
+  tags = {
+    Environment = var.env
+    Project     = var.project
+    Owner       = var.costcenter
+    managedby   = "terraform"
+  }
 }
 
 
@@ -41,11 +41,11 @@ tags = {
 
 data "aws_ami" "amazon_linux" {
   most_recent = true
-  owners = ["amazon"]
+  owners      = ["amazon"]
   filter {
-    name = "name"
+    name   = "name"
     values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-   }
+  }
 }
 
 resource "aws_launch_template" "ec2_lt" {

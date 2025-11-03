@@ -11,7 +11,7 @@ locals {
     ManagedBy   = "Terraform"
     Module      = "vpc"
   }
-  
+
   # EIP specific tags
   eip_tags = {
     Environment = var.env
@@ -21,10 +21,10 @@ locals {
     Module      = "vpc"
     Type        = "NAT-EIP"
   }
-  
+
   # Subnet validation
   max_subnets = length(data.aws_availability_zones.available.names)
-  
+
   # NAT Gateway count optimization
   nat_gateway_count = var.enable_nat_gateway ? length(var.public_subnet_cidrs) : 0
 }

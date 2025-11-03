@@ -10,11 +10,11 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_response_time" {
   statistic           = "Average"
   threshold           = var.alb_response_time_threshold
   alarm_description   = "ALB target response time is too high"
-  
+
   dimensions = {
     LoadBalancer = var.alb_arn
   }
-  
+
   alarm_actions = var.alarm_actions
   ok_actions    = var.alarm_actions
   tags          = local.common_tags
@@ -31,12 +31,12 @@ resource "aws_cloudwatch_metric_alarm" "alb_unhealthy_hosts" {
   statistic           = "Average"
   threshold           = 0
   alarm_description   = "ALB has unhealthy targets"
-  
+
   dimensions = {
     TargetGroup  = var.target_group_arn
     LoadBalancer = var.alb_arn
   }
-  
+
   alarm_actions = var.alarm_actions
   ok_actions    = var.alarm_actions
   tags          = local.common_tags
@@ -53,11 +53,11 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx_errors" {
   statistic           = "Sum"
   threshold           = var.alb_5xx_threshold
   alarm_description   = "ALB 5XX error rate is too high"
-  
+
   dimensions = {
     LoadBalancer = var.alb_arn
   }
-  
+
   alarm_actions = var.alarm_actions
   ok_actions    = var.alarm_actions
   tags          = local.common_tags

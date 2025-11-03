@@ -9,20 +9,27 @@ variable "env" { type = string }
 variable "project" { type = string }
 variable "costcenter" { type = string }
 variable "azs" {
-type = list(string)
-default = []
+  type    = list(string)
+  default = []
 }
 
 
 variable "public_subnet_cidrs" {
-type = list(string)
-default = ["10.0.1.0/24", "10.0.2.0/24"]
+  type    = list(string)
+  default = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
 
-variable "private_subnet_cidrs" {
-type = list(string)
-default = ["10.0.101.0/24", "10.0.102.0/24"]
+variable "ec2_private_subnet_cidrs" {
+  description = "CIDR blocks for EC2 private subnets (2 subnets in 2 AZs)"
+  type        = list(string)
+  default     = ["10.0.101.0/24", "10.0.102.0/24"]
+}
+
+variable "rds_private_subnet_cidrs" {
+  description = "CIDR blocks for RDS private subnets (minimum 2 for subnet group)"
+  type        = list(string)
+  default     = ["10.0.201.0/24", "10.0.202.0/24"]
 }
 
 variable "enable_nat_gateway" {

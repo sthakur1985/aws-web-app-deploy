@@ -44,7 +44,7 @@ resource "aws_security_group" "alb_sg" {
 
 # Create the Application Load Balancer
 resource "aws_lb" "this" {
-  name                       = "${local.name_prefix}"
+  name                       = local.name_prefix
   internal                   = false
   load_balancer_type         = "application"
   security_groups            = [aws_security_group.alb_sg.id]
@@ -98,7 +98,7 @@ resource "aws_lb_listener" "http" {
 
   default_action {
     type = var.ssl_certificate_arn != null ? "redirect" : "forward"
-    
+
     dynamic "redirect" {
       for_each = var.ssl_certificate_arn != null ? [1] : []
       content {
@@ -107,7 +107,7 @@ resource "aws_lb_listener" "http" {
         status_code = "HTTP_301"
       }
     }
-    
+
     target_group_arn = var.ssl_certificate_arn == null ? aws_lb_target_group.this.arn : null
   }
 }
@@ -115,7 +115,7 @@ resource "aws_lb_listener" "http" {
 # HTTPS Listener (only created if SSL certificate is provided)
 resource "aws_lb_listener" "https" {
   count = var.ssl_certificate_arn != null ? 1 : 0
-  
+
   load_balancer_arn = aws_lb.this.arn
   port              = "443"
   protocol          = "HTTPS"

@@ -1,31 +1,31 @@
-variable "aws_region" { 
-    description = "aws region to deploy" 
-    type = string
+variable "aws_region" {
+  description = "aws region to deploy"
+  type        = string
 }
 variable "instance_type" {
-    description = "instance type to deploy"
-    type = string
-    default = "t3.micro"
-} 
-variable "env" {
-    description = "environment name to deploy"
-    type = string
-    default = "dev"
-}  
-variable "project" {
-    description = "project name to deploy"
-    type = string
-    default = "aws-web-app"
-} 
-variable "costcenter" { 
-    description = "costcenter to deploy"
-    type = string
-    default = "aws-web-app"
+  description = "instance type to deploy"
+  type        = string
+  default     = "t3.micro"
 }
- 
+variable "env" {
+  description = "environment name to deploy"
+  type        = string
+  default     = "dev"
+}
+variable "project" {
+  description = "project name to deploy"
+  type        = string
+  default     = "aws-web-app"
+}
+variable "costcenter" {
+  description = "costcenter to deploy"
+  type        = string
+  default     = "aws-web-app"
+}
+
 variable "azs" {
-type = list(string)
-default = []
+  type    = list(string)
+  default = []
 }
 
 

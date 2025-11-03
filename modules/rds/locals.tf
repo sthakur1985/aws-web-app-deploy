@@ -4,8 +4,8 @@
 
 locals {
   common_tags = {
-    Project    = var.project
-    ManagedBy  = "Terraform"
-    Module     = "rds"
+    Project   = var.project
+    ManagedBy = "Terraform"
+    Module    = "rds"
   }
 }

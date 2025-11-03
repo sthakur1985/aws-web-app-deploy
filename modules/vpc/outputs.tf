@@ -23,8 +23,18 @@ output "public_subnet_ids" {
 }
 
 output "private_subnet_ids" {
-  description = "List of IDs of the private subnets"
-  value       = aws_subnet.private[*].id
+  description = "List of IDs of the EC2 private subnets (backward compatibility)"
+  value       = aws_subnet.ec2_private[*].id
+}
+
+output "ec2_private_subnet_ids" {
+  description = "List of IDs of the EC2 private subnets"
+  value       = aws_subnet.ec2_private[*].id
+}
+
+output "rds_private_subnet_ids" {
+  description = "List of IDs of the RDS private subnets"
+  value       = aws_subnet.rds_private[*].id
 }
 
 output "public_subnet_cidrs" {
@@ -32,9 +42,14 @@ output "public_subnet_cidrs" {
   value       = aws_subnet.public[*].cidr_block
 }
 
-output "private_subnet_cidrs" {
-  description = "List of CIDR blocks of the private subnets"
-  value       = aws_subnet.private[*].cidr_block
+output "ec2_private_subnet_cidrs" {
+  description = "List of CIDR blocks of the EC2 private subnets"
+  value       = aws_subnet.ec2_private[*].cidr_block
+}
+
+output "rds_private_subnet_cidrs" {
+  description = "List of CIDR blocks of the RDS private subnets"
+  value       = aws_subnet.rds_private[*].cidr_block
 }
 
 output "nat_gateway_ids" {
@@ -52,9 +67,14 @@ output "public_route_table_id" {
   value       = aws_route_table.public.id
 }
 
-output "private_route_table_ids" {
-  description = "List of IDs of the private route tables"
-  value       = aws_route_table.private[*].id
+output "ec2_private_route_table_ids" {
+  description = "List of IDs of the EC2 private route tables"
+  value       = aws_route_table.ec2_private[*].id
+}
+
+output "rds_private_route_table_ids" {
+  description = "List of IDs of the RDS private route tables"
+  value       = aws_route_table.rds_private[*].id
 }
 
 output "availability_zones" {

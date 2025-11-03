@@ -70,7 +70,7 @@ variable "password" {
   type        = string
   sensitive   = true
   default     = null
-  
+
   validation {
     condition     = var.password == null || length(var.password) >= 8
     error_message = "Password must be at least 8 characters long when provided."
@@ -81,7 +81,7 @@ variable "port" {
   description = "Database port"
   type        = number
   default     = 3306
-  
+
   validation {
     condition     = var.port >= 1024 && var.port <= 65535
     error_message = "Database port must be between 1024 and 65535."
@@ -98,7 +98,7 @@ variable "backup_retention_period" {
   description = "Number of days to retain backups"
   type        = number
   default     = 7
-  
+
   validation {
     condition     = var.backup_retention_period >= 0 && var.backup_retention_period <= 35
     error_message = "Backup retention period must be between 0 and 35 days."
@@ -109,7 +109,7 @@ variable "skip_final_snapshot" {
   description = "Skip snapshot on DB deletion (not recommended for production)"
   type        = bool
   default     = true
-  
+
   validation {
     condition     = can(tobool(var.skip_final_snapshot))
     error_message = "skip_final_snapshot must be a boolean value (true or false)."
@@ -189,9 +189,9 @@ variable "final_snapshot_identifier" {
   description = "Final snapshot identifier when skip_final_snapshot is false"
   type        = string
   default     = null
-  
+
   validation {
-    condition = var.skip_final_snapshot == true || (var.skip_final_snapshot == false && var.final_snapshot_identifier != null)
+    condition     = var.skip_final_snapshot == true || (var.skip_final_snapshot == false && var.final_snapshot_identifier != null)
     error_message = "final_snapshot_identifier must be provided when skip_final_snapshot is false."
   }
 }
