@@ -7,6 +7,7 @@ A comprehensive Terraform project for deploying a scalable, secure web applicati
 ## 🏗️ Architecture Overview
 
 Design Diagrams
+
 (https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp-1.jpg)
 (https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp-2.jpg)
 
