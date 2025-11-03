@@ -1,7 +1,7 @@
 # AWS Web Application Infrastructure
 
 A comprehensive Terraform project for deploying a scalable, secure web application infrastructure on AWS with multi-environment support.
-
+![alt text] (https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp.jpg)
 ## 🏗️ Architecture Overview
 
 This project creates a complete 3-tier web application infrastructure:
