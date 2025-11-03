@@ -64,7 +64,15 @@ on:
           - dev
           - staging
           - prod
-
+          
+    inputs:
+      region:
+        description: 'Deployment environment'
+        required: true
+        default: 'eu-west-2'
+        type: choice
+        options:
+          - eu-west-2
 
 jobs:
   deploy:
