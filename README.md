@@ -141,19 +141,19 @@ db_password = "your-secure-password-here"
 **Development:**
 ```bash
 terraform init -backend-config=environments/dev/backend.hcl
-terraform apply -var-file=environments/dev/terraform.tfvars -var-file=environments/dev/secrets.tfvars
+terraform apply -var-file=environments/dev/terraform.tfvars -var="<secret-key>=<secret-value>"
 ```
 
 **Staging:**
 ```bash
 terraform init -backend-config=environments/staging/backend.hcl
-terraform apply -var-file=environments/staging/terraform.tfvars -var-file=environments/staging/secrets.tfvars
+terraform apply -var-file=environments/staging/terraform.tfvars -var="<secret-key>=<secret-value>"
 ```
 
 **Production:**
 ```bash
 terraform init -backend-config=environments/prod/backend.hcl
-terraform apply -var-file=environments/prod/terraform.tfvars -var-file=environments/prod/secrets.tfvars
+terraform apply -var-file=environments/prod/terraform.tfvars -var="<secret-key>=<secret-value>"
 ```
 
 ## 🔒 Security Features
@@ -279,7 +279,7 @@ For issues and questions:
 1. Check the troubleshooting section
 2. Review AWS documentation
 3. Open an issue in the repository
-4. Contact the development team
+4. Contact Soumya Thakur (soumyathakur85@gmail.com)
 
 ---
 
