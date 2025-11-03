@@ -1,9 +1,12 @@
-# AWS Web Application Infrastructure
+# 🚀 AWS Web App Deployment with Terraform & GitHub Actions
+
+This repository automates the deployment and destruction of AWS infrastructure using Terraform and GitHub Actions. It supports multiple environments (`dev`, `staging`, `prod`) and regions, and integrates with Terraform Cloud for remote state management and speculative planning.
 
 A comprehensive Terraform project for deploying a scalable, secure web application infrastructure on AWS with multi-environment support.
-Design Diagram (https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp.jpg)
+
 ## 🏗️ Architecture Overview
 
+Design Diagram (https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp.jpg)
 This project creates a complete 3-tier web application infrastructure:
 
 - **Presentation Tier**: Application Load Balancer (ALB) with SSL/TLS termination
@@ -14,10 +17,13 @@ This project creates a complete 3-tier web application infrastructure:
 - **Security**: Centralized IAM roles and security groups
 - **Monitoring**: CloudWatch alarms and logging
 
+
 ## 📁 Project Structure
 
 ```
 aws-web-app-deploy/
+└── workflows/
+    └── terraform.yml       # Github actions workflow
 ├── main.tf                 # Root module configuration
 ├── variables.tf            # Input variables
 ├── outputs.tf             # Output values
@@ -73,10 +79,21 @@ cp environments/dev/terraform.tfvars.example environments/dev/terraform.tfvars
 cp environments/dev/secrets.tfvars.example environments/dev/secrets.tfvars
 
 # Edit with your values
-nano environments/dev/terraform.tfvars
-nano environments/dev/secrets.tfvars
+vi environments/dev/terraform.tfvars
+vi environments/dev/secrets.tfvars  #  may not be used as we are using secrets from pipeline secret env variables. Can be used in user local unit testing.
 ```
+## 🧰 Prerequisites
 
+- [Terraform CLI](https://www.terraform.io/downloads)
+- [Terraform Cloud](https://app.terraform.io/)
+- AWS account with access keys
+- GitHub repository secrets configured:
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `TF_API_TOKEN` (Terraform Cloud user token)
+  - `TF_DB_CRED` (optional: database credentials or other sensitive vars)
+
+---
 ### 3. Deploy Infrastructure
 ```bash
 # Initialize Terraform
@@ -260,6 +277,24 @@ rds_endpoint         = "webapp-dev-rds.xxxxxxxxx.eu-west-2.rds.amazonaws.com"
 alb_fqdn            = "app.example.com"
 cloudfront_fqdn     = "cdn.example.com"
 ```
+
+
+
+---
+
+## 📦 Features
+
+- Modular Terraform setup for AWS resources (VPC, EC2, RDS, ALB, S3, CloudFront)
+- GitHub Actions workflow for:
+  - `terraform init`, `fmt`, `plan`, and `apply`
+  - Environment and region selection
+  - Secure secret management
+- Supports both `terraform_apply` and `terraform_destroy` actions
+- Uses Terraform Cloud for remote state and collaboration
+
+---
+
+
 
 ## 🤝 Contributing
 
