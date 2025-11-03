@@ -83,10 +83,10 @@ nano environments/dev/secrets.tfvars
 terraform init -backend-config=environments/dev/backend.hcl
 
 # Plan deployment
-terraform plan -var-file=environments/dev/terraform.tfvars -var-file=environments/dev/secrets.tfvars
+terraform plan -var-file=environments/dev/terraform.tfvars -var="<secret-key>=<secret-value>"
 
 # Apply changes
-terraform apply -var-file=environments/dev/terraform.tfvars -var-file=environments/dev/secrets.tfvars
+terraform apply -var-file=environments/dev/terraform.tfvars -var="<secret-key>=<secret-value>"
 ```
 
 ## 🔧 Configuration
