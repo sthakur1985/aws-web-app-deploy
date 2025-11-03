@@ -65,7 +65,7 @@ on:
           - staging
           - prod
           
-    inputs:
+ 
       region:
         description: 'Deployment environment'
         required: true
@@ -73,6 +73,8 @@ on:
         type: choice
         options:
           - eu-west-2
+          - eu-east-2
+          - us-east-1
 
 jobs:
   deploy:
