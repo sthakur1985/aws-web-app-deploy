@@ -63,7 +63,8 @@ aws-web-app-deploy/
 
 ### Prerequisites
 - AWS CLI configured with appropriate credentials
-- Terraform >= 1.0
+- Terraform >= 1.5.0
+- Provider Version ~> 5.0
 - An AWS account with necessary permissions
 
 ### 1. Clone and Setup
@@ -294,7 +295,11 @@ cloudfront_fqdn     = "cdn.example.com"
 
 ---
 
+##  Testing ( Optional )
 
+- Unit testing code using terratest and go.
+- Integration test code will help to check the all modules are working as expected together.
+- format and syntax checking.
 
 ## 🤝 Contributing
 
