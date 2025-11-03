@@ -291,7 +291,7 @@ cloudfront_fqdn     = "cdn.example.com"
   - Environment and region selection
   - Secure secret management
 - Supports both `terraform_apply` and `terraform_destroy` actions
-- Uses Terraform Cloud for remote state and collaboration
+- Uses s3 bucket and dynamodb for statefile management. ( for dev and staging s3 lockfile is enabled instead for dynamodb )
 
 ---
 
