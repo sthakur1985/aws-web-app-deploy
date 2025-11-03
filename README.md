@@ -1,14 +1,14 @@
 # AWS Web Application Infrastructure
 
 A comprehensive Terraform project for deploying a scalable, secure web application infrastructure on AWS with multi-environment support.
-![alt text] (https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp.jpg)
+Design Diagram (https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp.jpg)
 ## 🏗️ Architecture Overview
 
 This project creates a complete 3-tier web application infrastructure:
 
 - **Presentation Tier**: Application Load Balancer (ALB) with SSL/TLS termination
 - **Application Tier**: Auto Scaling Group with EC2 instances in private subnets
-- **Data Tier**: RDS MySQL/PostgreSQL in isolated private subnets
+- **Data Tier**: RDS MySQL in isolated private subnets
 - **Content Delivery**: S3 + CloudFront for static content
 - **DNS Management**: Route53 for domain management
 - **Security**: Centralized IAM roles and security groups
