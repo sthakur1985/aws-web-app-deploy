@@ -1,6 +1,6 @@
 # 🚀 AWS Web App Deployment with Terraform & GitHub Actions
 
-This repository automates the deployment and destruction of AWS infrastructure using Terraform and GitHub Actions. It supports multiple environments (`dev`, `staging`, `prod`) and regions, and integrates with Terraform Cloud for remote state management and speculative planning.
+This repository automates the deployment and destruction of AWS infrastructure using Terraform and GitHub Actions. It supports multiple environments (`dev`, `staging`, `prod`) and regions, and integrates with s3/dynamodb for remote state management.
 
 A comprehensive Terraform project for deploying a scalable, secure web application infrastructure on AWS with multi-environment support.
 
@@ -12,14 +12,14 @@ Design Diagrams
 
 (https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp-2.jpg)
 
-This project creates a complete 3-tier web application infrastructure:
+This project proposes a complete 3-tier web application infrastructure:
 
-- **Presentation Tier**: Application Load Balancer (ALB) with SSL/TLS termination
+- **Presentation Tier**: Application Load Balancer (ALB) with SSL/TLS termination. (SSL is not considered as of now)
 - **Application Tier**: Auto Scaling Group with EC2 instances in private subnets
-- **Data Tier**: RDS MySQL is deployed in Multi-Az mode. Diagram depicts provsion of read replica.
+- **Data Tier**: RDS MySQL is deployed in Multi-Az mode. Diagram depicts provsion of read replica as well
 - **Content Delivery**: S3 + CloudFront for static content
 - **DNS Management**: Route53 for domain management
-- **Security**: Centralized IAM roles and security groups
+- **Security**: Centralized IAM roles and security groups. DB credentails are managed by secret manager
 - **Monitoring**: CloudWatch alarms and logging
 
 
@@ -96,7 +96,6 @@ vi environments/dev/secrets.tfvars  #  may not be used as we are using secrets f
 - GitHub repository secrets configured:
   - `AWS_ACCESS_KEY_ID`
   - `AWS_SECRET_ACCESS_KEY`
-  - `TF_API_TOKEN` (Terraform Cloud user token)
   - `TF_DB_CRED` (optional: database credentials or other sensitive vars)
 
 ---
@@ -187,6 +186,7 @@ terraform apply -var-file=environments/prod/terraform.tfvars -var="<secret-key>=
 - **Security groups** with least privilege access
 - **NAT Gateways** for secure outbound internet access
 - **RDS encryption** at rest and in transit
+- **SECRET management** is done aws secret manager or pipeline secrets
 
 ### IAM Security
 - **Centralized IAM module** for role management
