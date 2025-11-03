@@ -11,7 +11,7 @@ This project creates a complete 3-tier web application infrastructure:
 
 - **Presentation Tier**: Application Load Balancer (ALB) with SSL/TLS termination
 - **Application Tier**: Auto Scaling Group with EC2 instances in private subnets
-- **Data Tier**: RDS MySQL in isolated private subnets
+- **Data Tier**: RDS MySQL is deployed in Multi-Az mode. Diagram depicts provsion of read replica.
 - **Content Delivery**: S3 + CloudFront for static content
 - **DNS Management**: Route53 for domain management
 - **Security**: Centralized IAM roles and security groups
