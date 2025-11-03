@@ -6,7 +6,9 @@ A comprehensive Terraform project for deploying a scalable, secure web applicati
 
 ## 🏗️ Architecture Overview
 
-Design Diagram (https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp.jpg)
+Design Diagrams
+(https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp-1.jpg)
+(https://github.com/sthakur1985/aws-web-app-deploy/blob/main/aws-architecture-webapp-2.jpg)
 This project creates a complete 3-tier web application infrastructure:
 
 - **Presentation Tier**: Application Load Balancer (ALB) with SSL/TLS termination
