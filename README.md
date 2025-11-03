@@ -4,6 +4,46 @@ This repository automates the deployment and destruction of AWS infrastructure u
 
 A comprehensive Terraform project for deploying a scalable, secure web application infrastructure on AWS with multi-environment support.
 
+This project will provision infrastructure for a simple, scalable web application.
+The app will run on EC2 instances in an Auto Scaling Group (ASG) behind a Load 
+Balancer, use RDS for data, and store static assets in S3, distributed via CloudFront.
+Infrastructure Requirements
+1. Networking
+• Create a VPC with:
+o 2 public subnets (for ALB + NAT)
+o 2 private subnets (for EC2 + RDS)
+o Internet Gateway + NAT Gateway
+o Proper route tables for each tier
+2. Compute
+• Deploy an Auto Scaling Group with:
+o EC2 instances running Amazon Linux 2
+o User data script that installs Nginx and serves a simple HTML “Hello from 
+Terraform” page
+o Instance type configurable via variable (default: t3.micro)
+o Scaling policy based on CPU utilization (optional)
+3. Load Balancing
+• Create an Application Load Balancer (ALB):
+o Public-facing
+o Listener on port 80
+o Target group that includes the ASG instances
+o Health check endpoint (/)
+4. Database
+• Create an RDS instance (MySQL or PostgreSQL):
+o Deployed in private subnets
+o Accessible only from EC2 instances
+o Configurable parameters (storage, instance type, engine version)
+o Credentials managed via Terraform variables (safely)
+5. Terraform Best Practices
+• Organize configuration into modules (e.g., vpc, compute, alb, rds, s3_cloudfront)
+• Use a remote backend (S3 + DynamoDB) for Terraform state
+• Implement variables, outputs, and a terraform.tfvars file
+• Apply consistent resource tagging (Environment, Owner, Project)
+• Follow the principle of least privilege for IAM roles/policies
+6. Monitoring
+• Add CloudWatch alarms:
+o High CPU usage on EC2
+o Low free storage on RDS
+
 ## 🏗️ Architecture Overview
 
 Design Diagrams
@@ -111,7 +151,35 @@ terraform plan -var-file=environments/dev/terraform.tfvars -var="<secret-key>=<s
 terraform apply -var-file=environments/dev/terraform.tfvars -var="<secret-key>=<secret-value>"
 ```
 
-## 🔧 Configuration
+## 🚦 GitHub Actions Workflow
+
+### Trigger Manually
+
+Go to **Actions → Terraform → Run workflow**, then select:
+
+- `environment`: `dev`, `staging`, or `prod`
+- `region`: AWS region (e.g., `eu-west-2`)
+- `action`: `terraform_apply` or `terraform_destroy`
+
+### What It Does
+
+- **Apply**:
+  - Initializes Terraform
+  - Formats and validates code
+  - Plans and applies infrastructure changes
+- **Destroy**:
+  - Same steps as apply, but runs `terraform destroy`
+
+---
+
+## 🛡️ Security & Secrets
+
+Secrets must be configured in your GitHub repository:
+
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`: for AWS authentication
+- `TF_DB_CRED`: optional, passed as a variable to Terraform
+
+
 
 ### Required Variables
 ```hcl
