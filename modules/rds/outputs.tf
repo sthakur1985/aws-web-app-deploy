@@ -4,17 +4,17 @@
 
 output "rds_instance_id" {
   description = "RDS instance identifier"
-  value       = aws_db_instance.this.id
+  value       = aws_db_instance.main.id
 }
 
 output "rds_endpoint" {
   description = "RDS instance endpoint"
-  value       = aws_db_instance.this.endpoint
+  value       = aws_db_instance.main.endpoint
 }
 
 output "rds_port" {
   description = "RDS instance port"
-  value       = aws_db_instance.this.port
+  value       = aws_db_instance.main.port
 }
 
 output "rds_security_group_id" {
@@ -34,5 +34,5 @@ output "secret_name" {
 
 output "master_user_secret_arn" {
   description = "ARN of the master user secret managed by RDS"
-  value       = aws_db_instance.this.master_user_secret[0].secret_arn
+  value       = aws_db_instance.main.master_user_secret[0].secret_arn
 }

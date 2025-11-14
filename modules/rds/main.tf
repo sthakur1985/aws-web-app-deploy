@@ -35,7 +35,7 @@ resource "aws_security_group" "rds_sg" {
   })
 }
 
-resource "aws_db_instance" "this" {
+resource "aws_db_instance" "main" {
   identifier                      = "${var.project}-rds"
   allocated_storage               = var.allocated_storage
   max_allocated_storage           = var.max_allocated_storage
@@ -98,7 +98,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_low_storage" {
   treat_missing_data  = "notBreaching"
 
   dimensions = {
-    DBInstanceIdentifier = aws_db_instance.this.id
+    DBInstanceIdentifier = aws_db_instance.main.id
   }
 
   alarm_actions = var.alarm_actions
